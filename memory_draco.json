@@ -1,0 +1,21 @@
+{
+  "projects": {
+    "best buy merchant": {
+      "template": null
+    },
+    "test": {
+      "template": null
+    },
+    "best buy receipt": {
+      "template": null
+    },
+    "best buy": {
+      "template": null
+    }
+  },
+  "users": {
+    "1133386291858382939": {
+      "project": "best buy merchant"
+    }
+  }
+}
