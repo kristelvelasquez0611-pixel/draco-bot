@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const OWNER_ID = "1133386291858382939";
+
 global.fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
@@ -137,7 +139,7 @@ ${msg}
     fs.writeFileSync(fileName, html);
 
     await statusMsg.edit({
-      content: `✅ Done (${memory.currentProject})`,
+      content: `✅ Generation complete (${projectName})`
       files: [fileName]
     });
 
@@ -158,9 +160,15 @@ client.once("ready", () => {
 // ================= MAIN =================
 client.on("messageCreate", async (message) => {
 
-  console.log("📩 MESSAGE:", message.content); // 
-
   if (message.author.bot) return;
+
+  const channel = message.channel.name;
+
+  const allowed =
+  channel.startsWith("draco-merchant-") ||
+  channel === "hogwarts-battlefield";
+
+if (!allowed) return;
 
   const botId = client.user.id;
 
@@ -176,8 +184,28 @@ client.on("messageCreate", async (message) => {
 
   const userId = message.author.id;
 
-  const currentProject = memory.currentProject;
-  const project = memory.projects[currentProject];
+if (!memory.users[userId]) {
+  memory.users[userId] = {
+    project: null
+  };
+}
+if (msg.toLowerCase().startsWith("project:")) {
+
+  const name = msg
+    .split(":")[1]
+    ?.trim()
+    .toLowerCase();
+
+  if (!memory.projects[name]) {
+    return message.reply("❌ Project not found.");
+  }
+
+  memory.users[userId].project = name;
+
+  saveMemory();
+
+  return message.reply(`👀 Project set to: ${name}`);
+}
 
   // ================= TXT FILE READER =================
   if (message.attachments.size > 0) {
@@ -189,7 +217,7 @@ client.on("messageCreate", async (message) => {
         const res = await fetch(file.url);
         const text = await res.text();
 
-        msg = text; // 🔥 gamitin as command input
+        msg += "\n" + text;
         await message.reply("📄 TXT file loaded!");
       } catch (err) {
         console.error(err);
@@ -197,48 +225,54 @@ client.on("messageCreate", async (message) => {
       }
     }
 
-    // 👉 SAVE TEMPLATE (HTML)
-    if (file.name.endsWith(".html")) {
-      const res = await fetch(file.url);
-      const html = await res.text();
-
-      const currentProject = memory.currentProject;
-      const project = memory.projects[currentProject];
-      if (!project) return message.reply("⚠️ Set project first.");
-
-      project.template = html;
-      saveMemory();
-
-      return message.reply("🧠 Template saved!");
-    }
-  }
-
   // ================= SET PROJECT =================
-if (msg.toLowerCase().startsWith("project:")) {
-    const name = msg.split(":")[1]?.trim().toLowerCase();
+if (msg.toLowerCase().startsWith("train project:")) {
 
-    memory.currentProject = name;
+  if (message.channel.name !== "hogwarts-battlefield") {
+    return;
+  }
 
-    if (!memory.projects[name]) {
-        memory.projects[name] = { template: null };
-    }
+  if (message.author.id !== OWNER_ID) {
+    return message.reply("❌ Only owner can train.");
+  }
 
-    saveMemory();
+  const name = msg
+    .split(":")[1]
+    ?.trim()
+    .toLowerCase();
 
-    return message.reply(`📁 Global project set to: ${name}`);
+  memory.projects[name] = {
+    template: null
+  };
+
+  memory.users[userId].project = name;
+
+  saveMemory();
+
+  return message.reply(`🧠 Training started for: ${name}`);
 }
-
   // ================= PASTE TEMPLATE =================
-  if (msg.includes("<!DOCTYPE html>")) {
-    project.template = msg;
-    saveMemory();
-    return message.reply("🧠 Template learned.");
+if (msg.includes("<html")) {
+
+  if (message.author.id !== OWNER_ID) {
+    return;
   }
 
-  if (!project.template) {
-    return message.reply("⚠️ Send HTML template first.");
+  const projectName =
+    memory.users[userId]?.project;
+
+  if (!projectName) {
+    return message.reply("⚠️ No active project.");
   }
 
+  memory.projects[projectName].template = msg;
+
+  saveMemory();
+
+  return message.reply(
+    `🧠 Template saved for: ${projectName}`
+  );
+}
   // ================= GENERATE =================
   if (msg.toLowerCase().includes("generate")) {
 
@@ -249,7 +283,29 @@ if (msg.toLowerCase().startsWith("project:")) {
       `👀 Got your request!\n⏳ Queue position: #${position}\n⏱ ETA: ${eta}`
     );
 
-    queue.push({ message, project, msg, statusMsg });
+const projectName =
+  memory.users[userId]?.project;
+
+if (!projectName) {
+  return message.reply(
+    "⚠️ Please set project first."
+  );
+}
+
+const project =
+  memory.projects[projectName];
+
+if (!project?.template) {
+  return message.reply(
+    "❌ Template not found."
+  );
+}
+    queue.push({
+  message,
+  project,
+  msg,
+  statusMsg
+});
 
     updateQueueUI();
     processQueue();
