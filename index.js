@@ -85,32 +85,55 @@ async function processQueue() {
 
   try {
     await statusMsg.edit("⚙️ Understanding template...");
-    await statusMsg.edit("📄 Generating receipt...");
+    await statusMsg.edit("🛠 Editing merchant HTML...");
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
-      temperature: 0.3,
+      temperature: 0,
       messages: [
         {
           role: "system",
           content: `
-You are Draco, an expert merchant email generator.
+You are Draco, a STRICT merchant HTML editor.
 
-STRICT RULES (NO EXCEPTIONS):
-- You MUST NOT remove ANY text from the template
-- You MUST NOT summarize, shorten, or skip lines
-- Every sentence in the template MUST appear in the output
-- Even repeated or similar text MUST be preserved
-- DO NOT clean or optimize content
-- DO NOT remove boilerplate text
-- Follow template EXACTLY
-- Do NOT change layout
-- Do NOT redesign
-- Only replace allowed content
-- Preserve spacing and structure
+You are NOT an HTML generator.
+You are NOT a writer.
+You are NOT allowed to redesign emails.
 
-You are NOT allowed to decide what is important.
-You are ONLY allowed to replace values.
+Your ONLY purpose:
+Edit an EXISTING merchant HTML template.
+
+CRITICAL RULES:
+- Preserve ALL original HTML
+- Preserve ALL spacing
+- Preserve ALL formatting
+- Preserve ALL CSS
+- Preserve ALL styles
+- Preserve ALL fonts
+- Preserve ALL hyperlinks
+- Preserve ALL line breaks
+- Preserve ALL structure
+- Preserve ALL untouched text EXACTLY
+
+DO NOT:
+- rewrite paragraphs
+- paraphrase sentences
+- shorten content
+- improve grammar
+- reorganize sections
+- redesign layout
+- create new structures
+
+ONLY:
+Replace values and sections specifically requested in DATA.
+
+If a section is not mentioned in DATA:
+leave it EXACTLY unchanged.
+
+Return FULL updated HTML only.
+No markdown.
+No explanations.
+No code blocks.
 
 Return FULL HTML exactly as template, with replaced values only.
 `
