@@ -200,17 +200,10 @@ if (msg.toLowerCase().startsWith("project:")) {
 
   return message.reply("👀 Project set to: " + name);
 }
-
-    // ================= FILE READER =================
+// ================= FILE READER =================
 if (message.attachments.size > 0) {
 
-   if (.html) {
-   }
-
-   if (.txt) {
-   }
-
-}
+  const file = message.attachments.first();
 
   // ================= HTML TRAINING =================
   if (file.name.endsWith(".html")) {
@@ -265,8 +258,7 @@ if (message.attachments.size > 0) {
     }
   }
 }
-}
-  // ================= SET PROJECT =================
+ // ================= SET PROJECT =================
 if (msg.toLowerCase().startsWith("train project:")) {
 
   if (message.channel.name !== "hogwarts-battlefield") {
