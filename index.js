@@ -139,7 +139,7 @@ ${msg}
     fs.writeFileSync(fileName, html);
 
     await statusMsg.edit({
-      content: `✅ Generation complete (${projectName})`
+      content: `✅ Generation complete (${projectName}),
       files: [fileName]
     });
 
