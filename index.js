@@ -200,6 +200,32 @@ if (msg.toLowerCase().startsWith("project:")) {
 
   return message.reply("👀 Project set to: " + name);
 }
+ // ================= SET PROJECT =================
+if (msg.toLowerCase().startsWith("train project:")) {
+
+  if (message.channel.name !== "hogwarts-battlefield") {
+    return;
+  }
+
+  if (message.author.id !== OWNER_ID) {
+    return message.reply("❌ Only owner can train.");
+  }
+
+  const name = msg
+    .split(":")[1]
+    ?.trim()
+    .toLowerCase();
+
+  memory.projects[name] = {
+    template: null
+  };
+
+  memory.users[userId].project = name;
+
+  saveMemory();
+
+  return message.reply("🧠 Training started for: " + name);
+}
 // ================= FILE READER =================
 if (message.attachments.size > 0) {
 
@@ -258,32 +284,7 @@ if (message.attachments.size > 0) {
     }
   }
 }
- // ================= SET PROJECT =================
-if (msg.toLowerCase().startsWith("train project:")) {
 
-  if (message.channel.name !== "hogwarts-battlefield") {
-    return;
-  }
-
-  if (message.author.id !== OWNER_ID) {
-    return message.reply("❌ Only owner can train.");
-  }
-
-  const name = msg
-    .split(":")[1]
-    ?.trim()
-    .toLowerCase();
-
-  memory.projects[name] = {
-    template: null
-  };
-
-  memory.users[userId].project = name;
-
-  saveMemory();
-
-  return message.reply("🧠 Training started for: " + name);
-}
   // ================= PASTE TEMPLATE =================
 if (msg.includes("<html")) {
 
