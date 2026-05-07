@@ -201,26 +201,71 @@ if (msg.toLowerCase().startsWith("project:")) {
   return message.reply("👀 Project set to: " + name);
 }
 
-  // ================= TXT FILE READER =================
-  if (message.attachments.size > 0) {
-    const file = message.attachments.first();
+    // ================= FILE READER =================
+if (message.attachments.size > 0) {
 
-    // 👉 READ TXT FILE
-    if (file.name.endsWith(".txt")) {
-      try {
-        const res = await fetch(file.url);
-        const text = await res.text();
+   if (.html) {
+   }
 
-        msg += "\n" + text;
-        await message.reply("📄 TXT file loaded!");
-      } catch (err) {
-        console.error(err);
-        return message.reply("❌ Failed to read TXT file.");
-      }
-    }
+   if (.txt) {
+   }
 
 }
 
+  // ================= HTML TRAINING =================
+  if (file.name.endsWith(".html")) {
+
+    if (message.author.id !== OWNER_ID) {
+      return;
+    }
+
+    const res = await fetch(file.url);
+    const html = await res.text();
+
+    const projectName =
+      memory.users[userId]?.project;
+
+    if (!projectName) {
+      return message.reply(
+        "⚠️ No active project."
+      );
+    }
+
+    memory.projects[projectName].template = html;
+
+    saveMemory();
+
+    return message.reply(
+      "🧠 Template saved for: " +
+      projectName
+    );
+  }
+
+  // ================= TXT DATA =================
+  if (file.name.endsWith(".txt")) {
+
+    try {
+
+      const res = await fetch(file.url);
+      const text = await res.text();
+
+      msg += "\n" + text;
+
+      await message.reply(
+        "📄 TXT file loaded!"
+      );
+
+    } catch (err) {
+
+      console.error(err);
+
+      return message.reply(
+        "❌ Failed to read TXT file."
+      );
+    }
+  }
+}
+}
   // ================= SET PROJECT =================
 if (msg.toLowerCase().startsWith("train project:")) {
 
