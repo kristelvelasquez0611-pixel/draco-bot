@@ -94,7 +94,6 @@ async function processQueue() {
         {
           role: "system",
           content: `
-content: `
 You are Draco, a STRICT merchant HTML editor.
 
 You are NOT an HTML generator.
