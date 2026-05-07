@@ -137,7 +137,7 @@ ${msg}
     fs.writeFileSync(fileName, html);
 
     await statusMsg.edit({
-      content: `✅ Done (${user.project})`,
+      content: `✅ Done (${currentProject})`,
       files: [fileName]
     });
 
@@ -157,24 +157,29 @@ client.once("ready", () => {
 
 // ================= MAIN =================
 client.on("messageCreate", async (message) => {
-  // ❗ Ignore other bots
-if (message.author.bot) return;
 
-// ❗ Only respond if Draco is mentioned
-if (!message.mentions.has(client.user)) return;
+  console.log("📩 MESSAGE:", message.content); // 
 
-  await message.react("👀").catch(() => {});
+  if (message.author.bot) return;
+
+  const botId = client.user.id;
+
+  const isRealMention =
+    message.content.includes(`<@${botId}>`) ||
+    message.content.includes(`<@!${botId}>`);
+
+  if (!isRealMention) return;
+
+  let msg = message.content
+    .replace(/<@!?\d+>/g, "")
+    .trim();
 
   const userId = message.author.id;
-  let msg = message.content
-  .replace(/<@!?\\d+>/g, "") // remove mentions
-  .trim();
-
-  if (!memory.users[userId]) {
-    memory.users[userId] = { project: null };
-  }
 
   const user = memory.users[userId];
+
+  const currentProject = memory.currentProject;
+  const project = memory.projects[currentProject];
 
   // ================= TXT FILE READER =================
   if (message.attachments.size > 0) {
@@ -199,7 +204,8 @@ if (!message.mentions.has(client.user)) return;
       const res = await fetch(file.url);
       const html = await res.text();
 
-      const project = memory.projects[user.project];
+      const currentProject = memory.currentProject;
+      const project = memory.projects[currentProject];
       if (!project) return message.reply("⚠️ Set project first.");
 
       project.template = html;
@@ -210,25 +216,19 @@ if (!message.mentions.has(client.user)) return;
   }
 
   // ================= SET PROJECT =================
-  if (msg.toLowerCase().includes("project:")) {
-    const name = msg.toLowerCase().split("project:")[1]?.trim();
+if (msg.toLowerCase().startsWith("project:")) {
+    const name = msg.split(":")[1]?.trim().toLowerCase();
 
-    user.project = name;
+    memory.currentProject = name;
 
     if (!memory.projects[name]) {
-      memory.projects[name] = { template: null };
+        memory.projects[name] = { template: null };
     }
 
     saveMemory();
 
-    return message.reply(`📁 Project set to: ${name}`);
-  }
-
-  const project = memory.projects[user.project];
-
-  if (!project) {
-    return message.reply("⚠️ Set project first.");
-  }
+    return message.reply(`📁 Global project set to: ${name}`);
+}
 
   // ================= PASTE TEMPLATE =================
   if (msg.includes("<!DOCTYPE html>")) {
