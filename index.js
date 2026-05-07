@@ -139,7 +139,7 @@ ${msg}
     fs.writeFileSync(fileName, html);
 
     await statusMsg.edit({
-      content: `✅ Generation complete (${projectName}),
+      content: "✅ Generation complete",
       files: [fileName]
     });
 
@@ -198,7 +198,7 @@ if (msg.toLowerCase().startsWith("project:")) {
 
   saveMemory();
 
-  return message.reply(`👀 Project set to: ${name}`);
+  return message.reply("👀 Project set to: " + name);
 }
 
   // ================= TXT FILE READER =================
@@ -218,6 +218,8 @@ if (msg.toLowerCase().startsWith("project:")) {
         return message.reply("❌ Failed to read TXT file.");
       }
     }
+
+}
 
   // ================= SET PROJECT =================
 if (msg.toLowerCase().startsWith("train project:")) {
@@ -243,7 +245,7 @@ if (msg.toLowerCase().startsWith("train project:")) {
 
   saveMemory();
 
-  return message.reply(`🧠 Training started for: ${name}`);
+  return message.reply("🧠 Training started for: " + name);
 }
   // ================= PASTE TEMPLATE =================
 if (msg.includes("<html")) {
@@ -264,7 +266,7 @@ if (msg.includes("<html")) {
   saveMemory();
 
   return message.reply(
-    `🧠 Template saved for: ${projectName}`
+    "🧠 Template saved for: " + projectName
   );
 }
   // ================= GENERATE =================
@@ -274,8 +276,11 @@ if (msg.includes("<html")) {
     const eta = getETA(position);
 
     const statusMsg = await message.reply(
-      `👀 Got your request!\n⏳ Queue position: #${position}\n⏱ ETA: ${eta}`
-    );
+  "👀 Got your request!\n⏳ Queue position: #" +
+  position +
+  "\n⏱ ETA: " +
+  eta
+);
 
 const projectName =
   memory.users[userId]?.project;
