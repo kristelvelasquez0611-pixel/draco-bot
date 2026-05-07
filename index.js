@@ -224,7 +224,9 @@ if (msg.toLowerCase().startsWith("train project:")) {
 
   saveMemory();
 
-  return message.reply("🧠 Training started for: " + name);
+ await message.reply(
+  "🧠 Training started for: " + name
+);
 }
 // ================= FILE READER =================
 if (message.attachments.size > 0) {
