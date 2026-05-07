@@ -154,7 +154,7 @@ ${msg}
 
 // ================= READY =================
 client.once("ready", () => {
-  Console.log(`🔥 Draco (Harry Brain) as ${client.user.tag}`);
+  console.log(`🔥 Draco (Harry Brain) as ${client.user.tag}`);
 });
 
 // ================= MAIN =================
