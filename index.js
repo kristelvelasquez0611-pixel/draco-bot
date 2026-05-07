@@ -72,7 +72,7 @@ async function processQueue() {
   isProcessing = true;
 
   const job = queue.shift();
-  const { message, user, project, msg, statusMsg } = job;
+  const { message, project, msg, statusMsg } = job;
 
   updateQueueUI();
 
@@ -137,7 +137,7 @@ ${msg}
     fs.writeFileSync(fileName, html);
 
     await statusMsg.edit({
-      content: `✅ Done (${currentProject})`,
+      content: `✅ Done (${memory.currentProject})`,
       files: [fileName]
     });
 
@@ -175,8 +175,6 @@ client.on("messageCreate", async (message) => {
     .trim();
 
   const userId = message.author.id;
-
-  const user = memory.users[userId];
 
   const currentProject = memory.currentProject;
   const project = memory.projects[currentProject];
@@ -251,7 +249,7 @@ if (msg.toLowerCase().startsWith("project:")) {
       `👀 Got your request!\n⏳ Queue position: #${position}\n⏱ ETA: ${eta}`
     );
 
-    queue.push({ message, user, project, msg, statusMsg });
+    queue.push({ message, project, msg, statusMsg });
 
     updateQueueUI();
     processQueue();
