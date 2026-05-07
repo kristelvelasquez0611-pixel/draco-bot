@@ -231,7 +231,11 @@ if (msg.toLowerCase().startsWith("train project:")) {
 // ================= FILE READER =================
 if (message.attachments.size > 0) {
 
+   console.log("ATTACHMENTS DETECTED:", message.attachments.size);
+
   const file = message.attachments.first();
+
+  console.log(file.name);
 
   // ================= HTML TRAINING =================
   if (file.name.endsWith(".html")) {
