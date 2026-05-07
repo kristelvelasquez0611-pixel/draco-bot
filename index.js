@@ -170,13 +170,7 @@ client.on("messageCreate", async (message) => {
 
 if (!allowed) return;
 
-  const botId = client.user.id;
-
-  const isRealMention =
-    message.content.includes(`<@${botId}>`) ||
-    message.content.includes(`<@!${botId}>`);
-
-  if (!isRealMention) return;
+if (!message.mentions.has(client.user.id)) return;
 
   let msg = message.content
     .replace(/<@!?\d+>/g, "")
