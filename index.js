@@ -123,13 +123,14 @@ const nextTagRegex =
 }
 
 function formatParagraphs(text) {
+
   return text
     .split("\n\n")
-    .map(p =>
-      `<p style="margin:0 0 16px 0; line-height:1.6;">${
-        p.replace(/\n/g, "<br>")
-      }</p>`
-    )
+    .map(p => `
+      <p style="margin:0 0 16px 0; line-height:1.6; font-size:11px;">
+        ${p.replace(/\n/g, "<br>")}
+      </p>
+    `)
     .join("");
 }
 
