@@ -124,20 +124,17 @@ const nextTagRegex =
 
 function formatParagraphs(text) {
 
-  return text
-    .split("\n\n")
-    .map(p => `
-      <p style="
-        margin:0 0 16px 0;
-        line-height:1.6px;
-        font-size:14px;
-        font-family:Arial,sans-serif;
-        color:#000000;
-      ">
-        ${p.replace(/\n/g, "<br>")}
-      </p>
-    `)
-    .join("");
+  return `
+    <div style="
+      font-size:14px;
+      line-height:1.6;
+      font-family:Arial,sans-serif;
+      color:#000;
+      white-space:pre-line;
+    ">
+      ${text}
+    </div>
+  `;
 }
 
 html = html.replaceAll(
