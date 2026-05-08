@@ -219,20 +219,27 @@ client.once("ready", () => {
 });
 
 // ================= MAIN =================
-const processedMessages = new Set();
+const processedMessages = new Map();
 
 client.on("messageCreate", async (message) => {
 
   // ================= DUPLICATE BLOCKER =================
-  if (processedMessages.has(message.id)) {
-    return;
-  }
+const now = Date.now();
 
-  processedMessages.add(message.id);
+const lastProcessed =
+  processedMessages.get(message.id);
 
-  setTimeout(() => {
-    processedMessages.delete(message.id);
-  }, 10000);
+if (
+  lastProcessed &&
+  now - lastProcessed < 30000
+) {
+  return;
+}
+
+processedMessages.set(
+  message.id,
+  now
+);
 
   // ================= IGNORE BOTS =================
   if (message.author.bot) return;
