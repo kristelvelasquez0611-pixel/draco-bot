@@ -122,15 +122,6 @@ function getValue(tag, text) {
   return value.trim();
 }
 
-  const match = text.match(pattern);
-
-  if (!match) return "";
-
-  return match[1]
-    .replace(/^\n+/, "")
-    .replace(/\n+$/, "");
-}
-
 function formatParagraphs(text) {
   return text
     .split("\n\n")
