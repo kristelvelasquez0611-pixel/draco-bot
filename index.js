@@ -127,7 +127,13 @@ function formatParagraphs(text) {
   return text
     .split("\n\n")
     .map(p => `
-      <p style="margin:0 0 16px 0; line-height:1.6; font-size:11px;">
+      <p style="
+        margin:0 0 16px 0;
+        line-height:1.6px;
+        font-size:14px;
+        font-family:Arial,sans-serif;
+        color:#000000;
+      ">
         ${p.replace(/\n/g, "<br>")}
       </p>
     `)
@@ -240,10 +246,6 @@ html = html.replaceAll(
     console.error(err);
     await statusMsg.edit("❌ Error occurred.");
   }
-
-  isProcessing = false;
-  processQueue();
-}
 
 // ================= READY =================
 client.once("ready", () => {
