@@ -302,80 +302,31 @@ processedMessages[message.id] = true;
 
     saveMemory();
 
+await message.reply(
+  "🧠 Training started for: " + name
+);
+
+// process attachment directly here
+if (message.attachments.size > 0) {
+
+  const file = message.attachments.first();
+
+  if (file.name.endsWith(".html")) {
+
+    const res = await fetch(file.url);
+    const html = await res.text();
+
+    memory.projects[name].template = html;
+
+    saveMemory();
+
     await message.reply(
-      "🧠 Training started for: " + name
+      "🧠 Template saved for: " + name
     );
-
-    // wait for attachment only
-    if (message.attachments.size === 0) {
-      return;
-    }
   }
+}
 
-  // ================= FILE READER =================
-  if (message.attachments.size > 0) {
-
-    const file = message.attachments.first();
-
-    // ================= HTML TRAINING =================
-    if (file.name.endsWith(".html")) {
-
-      if (message.author.id !== OWNER_ID) {
-        return;
-      }
-
-      const res = await fetch(file.url);
-      const html = await res.text();
-
-      const projectName =
-        memory.users[userId]?.project;
-
-      if (!projectName) {
-        return message.reply(
-          "⚠️ No active project."
-        );
-      }
-
-      // duplicate save blocker
-      if (
-        memory.projects[projectName].template === html
-      ) {
-        return;
-      }
-
-      memory.projects[projectName].template = html;
-
-      saveMemory();
-
-      return message.reply(
-        "🧠 Template saved for: " +
-        projectName
-      );
-    }
-
-    // ================= TXT FILE =================
-    if (file.name.endsWith(".txt")) {
-
-      try {
-
-        const res = await fetch(file.url);
-        const text = await res.text();
-
-        msg += "\n" + text;
-
-        await message.reply(
-          "📄 TXT file loaded!"
-        );
-
-      } catch (err) {
-
-        console.error(err);
-
-        return message.reply(
-          "❌ Failed to read TXT file."
-        );
-      }
-    }
+return;
   }
 
   // ================= PASTE TEMPLATE =================
