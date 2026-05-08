@@ -221,20 +221,13 @@ client.once("ready", () => {
 // ================= MAIN =================
 const processedMessages = {};
 
-const processedMessages = new Set();
-
 client.on("messageCreate", async (message) => {
 
-  // ================= DUPLICATE BLOCKER =================
-  if (processedMessages.has(message.id)) {
-    return;
-  }
+if (processedMessages[message.id]) {
+  return;
+}
 
-  processedMessages.add(message.id);
-
-  setTimeout(() => {
-    processedMessages.delete(message.id);
-  }, 10000);
+processedMessages[message.id] = true;
 
   // ================= IGNORE BOTS =================
   if (message.author.bot) return;
