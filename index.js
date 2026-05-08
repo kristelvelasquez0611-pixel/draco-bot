@@ -99,8 +99,8 @@ function getValue(tag, text) {
   const remaining =
     text.substring(contentStart);
 
-  const nextTagRegex =
-    /\n\[[A-Z0-9_]+\]/;
+const nextTagRegex =
+  /\n\[(TOP_NAME|TOP_EMAIL|SUBJECT_LINE|TO_EMAIL|DATE|MERCHANT_RESPONSE|REQUEST_ID|MAIN_BODY|SIGNATURE|ATTACHMENT|ATTACHMENT_SIZE|FROM_NAME|FROM_EMAIL|ORIGINAL_HEADER|ORIGINAL_SUBJECT|ORIGINAL_MESSAGE|TRACKING)\]/;
 
   const nextTag =
     remaining.match(nextTagRegex);
