@@ -247,6 +247,9 @@ html = html.replaceAll(
     await statusMsg.edit("❌ Error occurred.");
   }
 
+  isProcessing = false;
+  processQueue();
+}
 // ================= READY =================
 client.once("ready", () => {
   console.log("Draco logged in: " + client.user.tag);
@@ -427,9 +430,9 @@ if (message.attachments.size > 0) {
 
       msg += "\n" + text;
 
-      await message.reply(
-        "📄 TXT command loaded!"
-      );
+      await statusMsg.edit(
+  "📄 TXT command loaded!\n⚙️ Preparing generation..."
+);
 
     } catch (err) {
 
@@ -453,6 +456,7 @@ if (message.attachments.size > 0) {
       msg,
       statusMsg
     });
+
 
     updateQueueUI();
     processQueue();
