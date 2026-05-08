@@ -8,7 +8,6 @@ global.fetch = (...args) =>
 const fs = require("fs");
 const { Client, GatewayIntentBits } = require("discord.js");
 const express = require("express");
-const OpenAI = require("openai");
 
 // ================= SERVER =================
 const app = express();
@@ -23,11 +22,6 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent
   ]
-});
-
-// ================= OPENAI =================
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
 });
 
 // ================= MEMORY =================
@@ -87,84 +81,115 @@ async function processQueue() {
     await statusMsg.edit("⚙️ Understanding template...");
     await statusMsg.edit("🛠 Editing merchant HTML...");
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0,
-      messages: [
-        {
-          role: "system",
-          content: `
-You are Draco, a STRICT merchant HTML editor.
+let html = project.template;
 
-You are NOT an HTML generator.
-You are NOT a writer.
-You are NOT allowed to redesign emails.
+function getValue(tag, text) {
+  const regex = new RegExp(
+    `\\[${tag}\\]([\\s\\S]*?)(?=\\n\\[|$)`
+  );
 
-Your ONLY purpose:
-Edit an EXISTING merchant HTML template.
+  return regex.exec(text)?.[1]?.trim() || "";
+}
 
-CRITICAL RULES:
-- Preserve ALL original HTML
-- Preserve ALL spacing
-- Preserve ALL formatting
-- Preserve ALL CSS
-- Preserve ALL styles
-- Preserve ALL fonts
-- Preserve ALL hyperlinks
-- Preserve ALL line breaks
-- Preserve ALL structure
-- Preserve ALL untouched text EXACTLY
+function formatParagraphs(text) {
+  return text
+    .split("\n\n")
+    .map(p =>
+      `<p style="margin:0 0 16px 0; line-height:1.6;">${
+        p.replace(/\n/g, "<br>")
+      }</p>`
+    )
+    .join("");
+}
 
-DO NOT:
-- rewrite paragraphs
-- paraphrase sentences
-- shorten content
-- improve grammar
-- reorganize sections
-- redesign layout
-- create new structures
+html = html.replaceAll(
+  "{{TOP_NAME}}",
+  getValue("TOP_NAME", msg)
+);
 
-TEXT FORMATTING RULES:
-- Preserve line breaks EXACTLY as written in DATA
-- Preserve spacing EXACTLY as written in DATA
-- Do NOT create extra paragraph spacing
-- Do NOT split lines into multiple paragraphs
-- Do NOT automatically wrap every line in <p> tags
-- Keep compact sections compact
-- Lists and serial sections must remain tightly grouped
-- Follow DATA formatting literally
-- If DATA uses single line spacing, preserve single line spacing
-- If DATA has no blank line, do not add one
-- Treat DATA as final formatted content, not drafts to improve
+html = html.replaceAll(
+  "{{TOP_EMAIL}}",
+  getValue("TOP_EMAIL", msg)
+);
 
-ONLY:
-Replace values and sections specifically requested in DATA.
+html = html.replaceAll(
+  "{{SUBJECT_LINE}}",
+  getValue("SUBJECT_LINE", msg)
+);
 
-If a section is not mentioned in DATA:
-leave it EXACTLY unchanged.
+html = html.replaceAll(
+  "{{TO_EMAIL}}",
+  getValue("TO_EMAIL", msg)
+);
 
-Return FULL updated HTML only.
-No markdown.
-No explanations.
-No code blocks.
+html = html.replaceAll(
+  "{{DATE}}",
+  getValue("DATE", msg)
+);
 
-Return FULL HTML exactly as template, with replaced values only.
-`
-        },
-        {
-          role: "user",
-          content: `
-TEMPLATE:
-${project.template}
+html = html.replaceAll(
+  "{{MERCHANT_RESPONSE}}",
+  getValue("MERCHANT_RESPONSE", msg)
+);
 
-DATA:
-${msg}
-`
-        }
-      ]
-    });
+html = html.replaceAll(
+  "{{REQUEST_ID}}",
+  getValue("REQUEST_ID", msg)
+);
 
-    const html = response.choices?.[0]?.message?.content;
+html = html.replaceAll(
+  "{{MAIN_BODY}}",
+  formatParagraphs(
+    getValue("MAIN_BODY", msg)
+  )
+);
+
+html = html.replaceAll(
+  "{{SIGNATURE}}",
+  getValue("SIGNATURE", msg)
+);
+
+html = html.replaceAll(
+  "{{ATTACHMENT}}",
+  getValue("ATTACHMENT", msg)
+);
+
+html = html.replaceAll(
+  "{{ATTACHMENT_SIZE}}",
+  getValue("ATTACHMENT_SIZE", msg)
+);
+
+html = html.replaceAll(
+  "{{FROM_NAME}}",
+  getValue("FROM_NAME", msg)
+);
+
+html = html.replaceAll(
+  "{{FROM_EMAIL}}",
+  getValue("FROM_EMAIL", msg)
+);
+
+html = html.replaceAll(
+  "{{ORIGINAL_HEADER}}",
+  getValue("ORIGINAL_HEADER", msg)
+);
+
+html = html.replaceAll(
+  "{{ORIGINAL_SUBJECT}}",
+  getValue("ORIGINAL_SUBJECT", msg)
+);
+
+html = html.replaceAll(
+  "{{ORIGINAL_MESSAGE}}",
+  formatParagraphs(
+    getValue("ORIGINAL_MESSAGE", msg)
+  )
+);
+
+html = html.replaceAll(
+  "{{TRACKING}}",
+  getValue("TRACKING", msg)
+);
 
     typing = false;
     clearInterval(typingInterval);
