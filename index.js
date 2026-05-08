@@ -288,6 +288,9 @@ if (msg.toLowerCase().startsWith("train project:")) {
  await message.reply(
   "🧠 Training started for: " + name
 );
+if (message.attachments.size === 0) {
+  return;
+}
 }
 // ================= FILE READER =================
 if (message.attachments.size > 0) {
@@ -300,6 +303,7 @@ if (message.attachments.size > 0) {
 
   // ================= HTML TRAINING =================
   if (file.name.endsWith(".html")) {
+
 
     if (message.author.id !== OWNER_ID) {
       return;
@@ -316,6 +320,11 @@ if (message.attachments.size > 0) {
         "⚠️ No active project."
       );
     }
+if (
+  memory.projects[projectName].template === html
+) {
+  return;
+}
 
     memory.projects[projectName].template = html;
 
