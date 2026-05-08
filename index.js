@@ -84,11 +84,51 @@ async function processQueue() {
 let html = project.template;
 
 function getValue(tag, text) {
-  const regex = new RegExp(
-    `\\[${tag}\\]([\\s\\S]*?)(?=\\n\\[|$)`
-  );
 
-  return regex.exec(text)?.[1]?.trim() || "";
+  const startTag = `[${tag}]`;
+
+  const startIndex = text.indexOf(startTag);
+
+  if (startIndex === -1) {
+    return "";
+  }
+
+  const contentStart =
+    startIndex + startTag.length;
+
+  const remaining =
+    text.substring(contentStart);
+
+  const nextTagRegex =
+    /\n\[[A-Z0-9_]+\]/;
+
+  const nextTag =
+    remaining.match(nextTagRegex);
+
+  let value;
+
+  if (nextTag) {
+
+    value = remaining.substring(
+      0,
+      nextTag.index
+    );
+
+  } else {
+
+    value = remaining;
+  }
+
+  return value.trim();
+}
+
+  const match = text.match(pattern);
+
+  if (!match) return "";
+
+  return match[1]
+    .replace(/^\n+/, "")
+    .replace(/\n+$/, "");
 }
 
 function formatParagraphs(text) {
@@ -379,7 +419,34 @@ return;
 
     const project =
       memory.projects[projectName];
+// ================= LOAD TXT COMMAND =================
+if (message.attachments.size > 0) {
 
+  const file = message.attachments.first();
+
+  if (file.name.endsWith(".txt")) {
+
+    try {
+
+      const res = await fetch(file.url);
+      const text = await res.text();
+
+      msg += "\n" + text;
+
+      await message.reply(
+        "📄 TXT command loaded!"
+      );
+
+    } catch (err) {
+
+      console.error(err);
+
+      return message.reply(
+        "❌ Failed to read TXT file."
+      );
+    }
+  }
+}
     if (!project?.template) {
       return message.reply(
         "❌ Template not found."
