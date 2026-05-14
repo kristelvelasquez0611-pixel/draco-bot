@@ -431,19 +431,20 @@ if (message.attachments.size > 0) {
   const file = message.attachments.first();
 
   if (
-  file.name.toLowerCase().endsWith(".txt")
-)
+    file.name.toLowerCase().endsWith(".txt")
+  ) {
 
     try {
 
       const res = await fetch(file.url);
+
       const text = await res.text();
 
       msg += "\n" + text;
 
       await statusMsg.edit(
-  "📄 TXT command loaded!\n⚙️ Preparing generation..."
-);
+        "📄 TXT command loaded!\n⚙️ Preparing generation..."
+      );
 
     } catch (err) {
 
@@ -455,23 +456,29 @@ if (message.attachments.size > 0) {
     }
   }
 }
-    if (!project?.template) {
-      return message.reply(
-        "❌ Template not found."
-      );
-    }
+const liveProject =
+  memory.projects[projectName];
 
-    queue.push({
-      message,
-      project,
-      msg,
-      statusMsg
-    });
+if (!liveProject?.template) {
 
+  return message.reply(
+    "❌ Template not found."
+  );
 
-    updateQueueUI();
-    processQueue();
-  }
+}
+
+queue.push({
+  message,
+  projectName,
+  msg,
+  statusMsg
+});
+
+updateQueueUI();
+
+processQueue();
+
+}
 });
 // ================= LOGIN =================
 client.login(process.env.DISCORD_TOKEN);
