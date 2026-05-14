@@ -405,6 +405,7 @@ return;
   if (msg.toLowerCase().includes("generate")) {
 
     const position = queue.length + 1;
+
     const eta = getETA(position);
 
     const statusMsg = await message.reply(
@@ -418,67 +419,72 @@ return;
       memory.users[userId]?.project;
 
     if (!projectName) {
+
       return message.reply(
         "⚠️ Please set project first."
       );
+
     }
 
-    const project =
+    // ================= LOAD TXT COMMAND =================
+    if (message.attachments.size > 0) {
+
+      const file =
+        message.attachments.first();
+
+      if (
+        file.name
+          .toLowerCase()
+          .endsWith(".txt")
+      ) {
+
+        try {
+
+          const res =
+            await fetch(file.url);
+
+          const text =
+            await res.text();
+
+          msg += "\n" + text;
+
+          await statusMsg.edit(
+            "📄 TXT command loaded!\n⚙️ Preparing generation..."
+          );
+
+        } catch (err) {
+
+          console.error(err);
+
+          return message.reply(
+            "❌ Failed to read TXT file."
+          );
+        }
+      }
+    }
+
+    const liveProject =
       memory.projects[projectName];
-// ================= LOAD TXT COMMAND =================
-if (message.attachments.size > 0) {
 
-  const file = message.attachments.first();
-
-  if (
-    file.name.toLowerCase().endsWith(".txt")
-  ) {
-
-    try {
-
-      const res = await fetch(file.url);
-
-      const text = await res.text();
-
-      msg += "\n" + text;
-
-      await statusMsg.edit(
-        "📄 TXT command loaded!\n⚙️ Preparing generation..."
-      );
-
-    } catch (err) {
-
-      console.error(err);
+    if (!liveProject?.template) {
 
       return message.reply(
-        "❌ Failed to read TXT file."
+        "❌ Template not found."
       );
+
     }
+
+    queue.push({
+      message,
+      projectName,
+      msg,
+      statusMsg
+    });
+
+    updateQueueUI();
+
+    processQueue();
   }
-}
-const liveProject =
-  memory.projects[projectName];
-
-if (!liveProject?.template) {
-
-  return message.reply(
-    "❌ Template not found."
-  );
-
-}
-
-queue.push({
-  message,
-  projectName,
-  msg,
-  statusMsg
 });
 
-updateQueueUI();
-
-processQueue();
-
-}
-});
-// ================= LOGIN =================
 client.login(process.env.DISCORD_TOKEN);
