@@ -350,21 +350,25 @@ await message.reply(
 // process attachment directly here
 if (message.attachments.size > 0) {
 
-  const file = message.attachments.first();
+  const file =
+    message.attachments.first();
 
-if (
-  file.name.toLowerCase().endsWith(".html")
-) {
+  if (
+    file.name
+      .toLowerCase()
+      .endsWith(".html")
+  ) {
 
-  const res = await fetch(file.url);
+    const res =
+      await fetch(file.url);
 
-  const html = await res.text();
+    const html =
+      await res.text();
 
-  memory.projects[name].template = html;
+    memory.projects[name]
+      .template = html;
 
-  saveMemory();
-
-}
+    saveMemory();
 
     await message.reply(
       "🧠 Template saved for: " + name
@@ -373,8 +377,7 @@ if (
 }
 
 return;
-  }
-
+}
   // ================= PASTE TEMPLATE =================
   if (msg.includes("<html")) {
 
