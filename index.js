@@ -415,7 +415,7 @@ return;
       eta
     );
 
-    const projectName =
+    const projectName =s
       memory.users[userId]?.project;
 
     if (!projectName) {
