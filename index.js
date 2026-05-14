@@ -68,7 +68,7 @@ async function processQueue() {
   isProcessing = true;
 
   const job = queue.shift();
-  const { message, project, msg, statusMsg } = job;
+  const { message, projectName, msg, statusMsg } = job;
 
   updateQueueUI();
 
@@ -81,7 +81,10 @@ async function processQueue() {
     await statusMsg.edit("⚙️ Understanding template...");
     await statusMsg.edit("🛠 Editing merchant HTML...");
 
-let html = project.template;
+const liveProject =
+  memory.projects[projectName];
+
+let html = liveProject.template;
 
 function getValue(tag, text) {
 
@@ -332,13 +335,13 @@ processedMessages[message.id] = true;
       ?.trim()
       .toLowerCase();
 
-    memory.projects[name] = {
-      template: null
-    };
+    if (!memory.projects[name]) {
 
-    memory.users[userId].project = name;
+  memory.projects[name] = {};
 
-    saveMemory();
+}
+
+memory.users[userId].project = name;
 
 await message.reply(
   "🧠 Training started for: " + name
@@ -349,7 +352,9 @@ if (message.attachments.size > 0) {
 
   const file = message.attachments.first();
 
-  if (file.name.endsWith(".html")) {
+  if (
+  file.name.toLowerCase().endsWith(".html")
+)
 
     const res = await fetch(file.url);
     const html = await res.text();
@@ -422,7 +427,9 @@ if (message.attachments.size > 0) {
 
   const file = message.attachments.first();
 
-  if (file.name.endsWith(".txt")) {
+  if (
+  file.name.toLowerCase().endsWith(".txt")
+)
 
     try {
 
