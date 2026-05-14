@@ -352,16 +352,19 @@ if (message.attachments.size > 0) {
 
   const file = message.attachments.first();
 
-  if (
+if (
   file.name.toLowerCase().endsWith(".html")
-)
+) {
 
-    const res = await fetch(file.url);
-    const html = await res.text();
+  const res = await fetch(file.url);
 
-    memory.projects[name].template = html;
+  const html = await res.text();
 
-    saveMemory();
+  memory.projects[name].template = html;
+
+  saveMemory();
+
+}
 
     await message.reply(
       "🧠 Template saved for: " + name
